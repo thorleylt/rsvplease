@@ -1,12 +1,27 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 
+interface IFormValues {
+  email: string;
+  invitee: string;
+  diet: string;
+}
+
 const capitalizeFirstLetter = (string: string) =>
   string.charAt(0).toUpperCase() + string.slice(1);
 
 const App = () => {
-  const { register, handleSubmit } = useForm();
-  const onSubmit = (data: unknown) => console.log(data);
+  const { register, handleSubmit } = useForm<IFormValues>();
+  const onSubmit = (data: IFormValues) => {
+    fetch("./.netlify/functions/addRsvp", {
+      method: "POST",
+      body: JSON.stringify({
+        invitee: data.invitee,
+        inviteId: "someId",
+        inviteeEmail: data.email,
+      }),
+    });
+  };
 
   const queryString = window.location.search;
   const queryParams = new URLSearchParams(queryString);
@@ -26,19 +41,19 @@ const App = () => {
           <div className="mb-4">
             <label
               className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="name"
+              htmlFor="invitee"
             >
               Your name
             </label>
             <input
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              id="name"
+              id="invitee"
               type="text"
               placeholder="Ariel"
               defaultValue={
                 invitee ? capitalizeFirstLetter(invitee) : undefined
               }
-              {...register("name")}
+              {...register("invitee")}
             />
           </div>
           <div className="mb-4">
